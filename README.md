@@ -29,8 +29,8 @@ $ python manage.py runserver
 ```
 Далее, в терминале отобразится сервер с портом, по которому следует перейти, например:
 
->Django version 5.0.6, using settings 'djangoapp.settings'\
->Starting development server at http://127.0.0.1:8000/\
+>Django version 5.0.6, using settings 'djangoapp.settings' \
+>Starting development server at http://127.0.0.1:8000/ \
 >Quit the server with CTRL-BREAK.
 
 Можно перейти и посмотреть, как оно работает :)
