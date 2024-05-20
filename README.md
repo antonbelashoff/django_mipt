@@ -12,8 +12,8 @@
 ## Инструкция по запуску
 Первоначально, необходимо клонировать репозиторий и перейти в корневую папку с проектом командами:
 ```
-$ git clone 
-$ cd django_project
+$ git clone https://github.com/antonbelashoff/django_mipt 
+$ cd django_mipt
 ```
 > [!TIP]
 > Рекомендуется это делать в виртуальной среде, например .venv
