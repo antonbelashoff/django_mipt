@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}Играть в викторину{% endblock %}
+
+{% block content %}
+    <style>
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 60px;
+            padding: 20px;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        .quiz-header {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .list-group {
+            width: 100%;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .list-group-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            background-color: #fff;
+            transition: background-color 0.3s ease;
+        }
+
+        .list-group-item:hover {
+            background-color: #f1f1f1;
+        }
+
+        .no-quizzes {
+            text-align: center;
+            color: #888;
+            margin-top: 20px;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-primary, .btn-delete, .btn-details {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+
+        .btn-details {
+            background-color: #17a2b8;
+            color: white;
+        }
+
+        .btn-details:hover {
+            background-color: #138496;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 5px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+    <div class="container quiz-container">
+        <h2 class="quiz-header">Играть в викторину</h2>
+        {% if quizzes %}
+            <div class="list-group">
+                {% for quiz in quizzes %}
+                    <div class="list-group-item">
+                        <div>
+                            <h5>Название викторины: {{ quiz.title }}</h5>
+                            <p>Описание: {{ quiz.short_description }}</p>
+                            <p>Количество вопросов: {{ quiz.question_count }}</p>
+                            <div class="button-container">
+                                <a href="{% url 'take_quiz' quiz.id %}" class="btn btn-primary">Играть</a>
+                                <button class="btn btn-details" onclick="openModal('{{ quiz.id }}')">Подробнее</button>
+                                <form method="post" action="{% url 'delete_quiz' quiz.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-delete">Удалить</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="modal-{{ quiz.id }}" class="modal">
+                        <div class="modal-content">
+                            <span class="close" onclick="closeModal('{{ quiz.id }}')">&times;</span>
+                            <h2>{{ quiz.title }}</h2>
+                            <p>{{ quiz.detailed_description }}</p>
+                            <p>Средняя оценка: {{ quiz.average_rating }}</p>
+                            <p>Средний балл: {{ quiz.average_score }} / {{ quiz.question_count }}</p> <!-- Корректное отображение среднего балла -->
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="no-quizzes">Викторин еще нет, но вы можете её <a href="{% url 'create_quiz' %}">создать</a>.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        function openModal(quizId) {
+            document.getElementById('modal-' + quizId).style.display = 'block';
+        }
+
+        function closeModal(quizId) {
+            document.getElementById('modal-' + quizId).style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            var modals = document.getElementsByClassName('modal');
+            for (var i = 0; i < modals.length; i++) {
+                if (event.target == modals[i]) {
+                    modals[i].style.display = 'none';
+                }
+            }
+        }
+    </script>
+{% endblock %}

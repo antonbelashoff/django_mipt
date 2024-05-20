@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Добавить вопрос{% endblock %}
+
+{% block content %}
+    <style>
+        .profile-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 60px;
+            padding: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        .profile-header {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-confirm {
+            background-color: #28a745;
+            border: none;
+        }
+
+        .btn-confirm:hover {
+            background-color: #218838;
+        }
+
+        .errorlist {
+            color: red;
+            margin-top: 5px;
+        }
+
+        .alert {
+            margin-top: 15px;
+        }
+
+        form {
+            width: 100%;
+        }
+
+        form .form-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        form .form-group label,
+        form .form-group input,
+        form .form-group textarea {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        form button {
+            margin-top: 20px;
+        }
+    </style>
+    <div class="container profile-container">
+        <h2 class="profile-header">Добавить вопрос {{ question_num }} в викторину: {{ quiz.title }}</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ question_form.as_p }}
+            <div class="form-group">
+                <label for="choice_count">Количество вариантов ответа:</label>
+                <input type="number" id="choice_count" name="choice_count" min="2" max="10" value="4" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary">Добавить вопрос</button>
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Добавить варианты ответов{% endblock %}
+
+{% block content %}
+    <style>
+        .profile-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 60px;
+            padding: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        .profile-header {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-confirm {
+            background-color: #28a745;
+            border: none;
+        }
+
+        .btn-confirm:hover {
+            background-color: #218838;
+        }
+
+        .errorlist {
+            color: red;
+            margin-top: 5px;
+        }
+
+        .alert {
+            margin-top: 15px;
+        }
+
+        form {
+            width: 100%;
+        }
+
+        form .form-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        form .form-group label,
+        form .form-group input {
+            margin-bottom: 0;
+        }
+
+        form .form-group input[type="text"] {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        form .form-group input[type="checkbox"] {
+            margin-left: 10px;
+        }
+
+        form button {
+            margin-top: 20px;
+        }
+    </style>
+    <div class="container profile-container">
+        <h2 class="profile-header">Добавить варианты ответов к вопросу {{ question_num }}</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ formset.management_form }}
+            {% for form in formset %}
+                <div class="form-group">
+                    {{ form.text.label_tag }} {{ form.text }} {{ form.is_correct.label_tag }} {{ form.is_correct }}
+                    {% if form.errors %}
+                        <div class="errorlist">
+                            {{ form.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            {% if formset.non_form_errors %}
+                <div class="alert alert-danger">
+                    {{ formset.non_form_errors }}
+                </div>
+            {% endif %}
+            <button type="submit" class="btn btn-primary">Сохранить варианты</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let checkboxes = document.querySelectorAll('input[type=checkbox][name$=is_correct]');
+            checkboxes.forEach(function(checkbox) {
+                checkbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        checkboxes.forEach(function(box) {
+                            if (box !== checkbox) {
+                                box.checked = false;
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

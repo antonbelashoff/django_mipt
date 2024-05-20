@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}{{ quiz.title }}{% endblock %}
+
+{% block content %}
+    <style>
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 60px;
+            padding: 20px;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        .quiz-header {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .question-container {
+            width: 100%;
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+
+        .question-container h5 {
+            margin-bottom: 10px;
+        }
+
+        .form-check {
+            margin-bottom: 10px;
+        }
+
+        .form-check input {
+            margin-right: 10px;
+        }
+
+        .btn-submit {
+            margin-top: 20px;
+        }
+    </style>
+    <div class="container quiz-container">
+        <h2 class="quiz-header">{{ quiz.title }}</h2>
+        <p>{{ quiz.description }}</p>
+        <form method="post">
+            {% csrf_token %}
+            {% for question in questions %}
+                <div class="question-container">
+                    <h5>{{ forloop.counter }}. {{ question.text }}</h5>
+                    {% for choice in question.choices.all %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="question_{{ question.id }}" id="choice_{{ choice.id }}" value="{{ choice.id }}">
+                            <label class="form-check-label" for="choice_{{ choice.id }}">
+                                {{ choice.text }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary btn-submit">Отправить ответы</button>
+        </form>
+    </div>
+{% endblock %}

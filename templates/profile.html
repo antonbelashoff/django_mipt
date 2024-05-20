@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+
+{% block title %}Профиль{% endblock %}
+
+{% block content %}
+<style>
+    .profile-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-top: 60px;
+        padding: 20px;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+    }
+
+    .profile-header {
+        width: 100%;
+        text-align: left;
+        margin-bottom: 20px;
+    }
+
+    .profile-section {
+        width: 100%;
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        position: relative;
+    }
+
+    .profile-section h3 {
+        margin-top: 0;
+    }
+
+    .profile-section p {
+        margin: 5px 0;
+    }
+
+    .profile-section .edit-button {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .profile-section .edit-button:hover {
+        background-color: #5a6268;
+    }
+
+    .modal-header {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .modal-title {
+        margin: 0 auto;
+    }
+
+    .btn-confirm {
+        background-color: #28a745;
+        border: none;
+    }
+
+    .btn-confirm:hover {
+        background-color: #218838;
+    }
+
+    .modal-body form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .modal-body form .form-group {
+        margin-bottom: 15px;
+    }
+
+    .modal-body form .form-group label {
+        margin-bottom: 5px;
+    }
+
+    .errorlist {
+        color: red;
+        margin-top: 5px;
+    }
+
+    .errorlist li {
+        list-style-type: none;
+        white-space: pre-line;
+    }
+
+    .is-invalid {
+        border-color: red;
+    }
+
+    .error-message {
+        color: red;
+        margin-top: 5px;
+    }
+
+    .best-scores-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+    .best-scores-table th,
+    .best-scores-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+    }
+
+    .best-scores-table th {
+        background-color: #f2f2f2;
+        color: #333;
+    }
+
+    .best-scores-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+</style>
+
+<div class="container profile-container">
+    <h2 class="profile-header">Профиль пользователя</h2>
+
+    <div class="profile-section">
+        <h3>Личная информация</h3>
+        <button type="button" class="edit-button" data-toggle="modal" data-target="#editUserInfoModal">Редактировать</button>
+        <p><strong>Имя пользователя:</strong> {{ user.username }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+    </div>
+
+    <div class="profile-section">
+        <h3>Профиль</h3>
+        <button type="button" class="edit-button" data-toggle="modal" data-target="#editProfileModal">Редактировать</button>
+        <p><strong>Имя:</strong> {{ user.profile.first_name }}</p>
+        <p><strong>Фамилия:</strong> {{ user.profile.last_name }}</p>
+    </div>
+
+    <div class="profile-section">
+        <h3>Лучшие результаты</h3>
+        <table class="best-scores-table">
+            <thead>
+                <tr>
+                    <th>Название викторины</th>
+                    <th>Максимальный балл</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for quiz_title, score in quiz_scores %}
+                    <tr>
+                        <td>{{ quiz_title }}</td>
+                        <td>{{ score }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="profile-section">
+        <h3>Изменить пароль</h3>
+        <button type="button" class="edit-button" data-toggle="modal" data-target="#editPasswordModal">Редактировать</button>
+    </div>
+</div>
+
+<div class="modal fade" id="editUserInfoModal" tabindex="-1" role="dialog" aria-labelledby="editUserInfoModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUserInfoModalLabel">Редактировать личную информацию</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="userInfoForm" method="post" novalidate>
+                    {% csrf_token %}
+                    {% for field in user_form %}
+                        <div class="form-group">
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {% if field.errors %}
+                                <ul class="errorlist">
+                                    {% for error in field.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-confirm mt-3">Сохранить изменения</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProfileModalLabel">Редактировать профиль</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="profileForm" method="post" novalidate>
+                    {% csrf_token %}
+                    {% for field in profile_form %}
+                        <div class="form-group">
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {% if field.errors %}
+                                <ul class="errorlist">
+                                    {% for error in field.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-confirm mt-3">Сохранить изменения</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editPasswordModal" tabindex="-1" role="dialog" aria-labelledby="editPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editPasswordModalLabel">Изменить пароль</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="passwordForm" method="post" novalidate>
+                    {% csrf_token %}
+                    {% for field in password_form %}
+                        <div class="form-group">
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {% if field.errors %}
+                                <ul class="errorlist">
+                                    {% for error in field.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-confirm mt-3">Сохранить изменения</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
